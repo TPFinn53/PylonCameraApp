@@ -193,6 +193,7 @@
             // 
             // toolStripFramesLabel
             // 
+            this.toolStripFramesLabel.Enabled = false;
             this.toolStripFramesLabel.Name = "toolStripFramesLabel";
             this.toolStripFramesLabel.Size = new System.Drawing.Size(48, 22);
             this.toolStripFramesLabel.Text = "Frames:";
@@ -215,6 +216,7 @@
             // 
             // toolStripProgressBar1
             // 
+            this.toolStripProgressBar1.Enabled = false;
             this.toolStripProgressBar1.Name = "toolStripProgressBar1";
             this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 22);
             // 

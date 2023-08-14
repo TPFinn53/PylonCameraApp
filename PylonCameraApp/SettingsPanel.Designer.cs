@@ -52,6 +52,8 @@
             this.stopButton = new System.Windows.Forms.Button();
             this.continuousShotButton = new System.Windows.Forms.Button();
             this.pictureWindow = new PylonCameraApp.PictureWindow();
+            this.label1 = new System.Windows.Forms.Label();
+            this.testPatternControl = new PylonCameraApp.EnumerationComboBoxUserControl();
             this.settingsTableLayout.SuspendLayout();
             this.tableLayoutPanelGain.SuspendLayout();
             this.tableLayoutPanelExposureTime.SuspendLayout();
@@ -78,8 +80,10 @@
             this.settingsTableLayout.Controls.Add(this.invertPixelLabel, 0, 7);
             this.settingsTableLayout.Controls.Add(this.pixelFormatControl, 1, 3);
             this.settingsTableLayout.Controls.Add(this.panelForButtons, 0, 0);
+            this.settingsTableLayout.Controls.Add(this.label1, 0, 8);
+            this.settingsTableLayout.Controls.Add(this.testPatternControl, 1, 8);
             this.settingsTableLayout.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.settingsTableLayout.Location = new System.Drawing.Point(0, 330);
+            this.settingsTableLayout.Location = new System.Drawing.Point(0, 350);
             this.settingsTableLayout.Margin = new System.Windows.Forms.Padding(2);
             this.settingsTableLayout.Name = "settingsTableLayout";
             this.settingsTableLayout.RowCount = 9;
@@ -92,7 +96,7 @@
             this.settingsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.settingsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.settingsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.settingsTableLayout.Size = new System.Drawing.Size(340, 288);
+            this.settingsTableLayout.Size = new System.Drawing.Size(340, 268);
             this.settingsTableLayout.TabIndex = 28;
             // 
             // softwareTriggerExecuteButton
@@ -356,8 +360,29 @@
             this.pictureWindow.Location = new System.Drawing.Point(0, 0);
             this.pictureWindow.Margin = new System.Windows.Forms.Padding(2);
             this.pictureWindow.Name = "pictureWindow";
-            this.pictureWindow.Size = new System.Drawing.Size(338, 326);
+            this.pictureWindow.Size = new System.Drawing.Size(338, 268);
             this.pictureWindow.TabIndex = 32;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label1.Location = new System.Drawing.Point(3, 240);
+            this.label1.Name = "label1";
+            this.label1.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.label1.Size = new System.Drawing.Size(134, 18);
+            this.label1.TabIndex = 20;
+            this.label1.Text = "Test Pattern";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // testPatternControl
+            // 
+            this.testPatternControl.DefaultName = "N/A";
+            this.testPatternControl.Location = new System.Drawing.Point(142, 242);
+            this.testPatternControl.Margin = new System.Windows.Forms.Padding(2);
+            this.testPatternControl.Name = "testPatternControl";
+            this.testPatternControl.Size = new System.Drawing.Size(190, 21);
+            this.testPatternControl.TabIndex = 21;
             // 
             // SettingsPanel
             // 
@@ -406,5 +431,7 @@
         private EnumerationComboBoxUserControl triggerModeControl;
         private EnumerationComboBoxUserControl triggerSourceControl;
         private System.Windows.Forms.Panel panelForButtons;
+        private System.Windows.Forms.Label label1;
+        private EnumerationComboBoxUserControl testPatternControl;
     }
 }

@@ -12,18 +12,18 @@ namespace PylonCameraApp
         private ICameraInfo selectedCameraInfo = null;
         private object FileObject = null;
 
+
         public MainForm()
         {
             InitializeComponent();
+
             UpdateDeviceList();
 
             closeButton1.Enabled = false;
             settingsPanel1.GetGuiCamera().GuiCameraConnectionToCameraLost += OnDeviceRemoval;
             settingsPanel1.GetGuiCamera().GuiCameraOpenedCamera += OnCamera1Opened;
             settingsPanel1.GetGuiCamera().GuiCameraClosedCamera += OnCamera1Closed;
-            calibrationUserControl1.Visible = false;
-            calibrationUserControl1.OnStatusChange += CalibrationUserControl1_OnStatusChange; 
-        }
+       }
 
         private void CalibrationUserControl1_OnStatusChange(string Status)
         {
@@ -123,7 +123,7 @@ namespace PylonCameraApp
                 settingsPanel1.GetGuiCamera().CreateByCameraInfo(selectedCameraInfo);
                 settingsPanel1.GetGuiCamera().OpenCamera();
                 GUICamera g = settingsPanel1.GetGuiCamera();
-                calibrationUserControl1.SetCamera(g);
+                CalibrationView.SetCamera(g);
             }
             catch (Exception ex)
             {
@@ -212,20 +212,26 @@ namespace PylonCameraApp
             serialNumberTextBox1.Enabled = true;
             userIDTextBox1.Enabled = true;
         }
-
-        private void calibrationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnNewCalibrationFile(object sender, EventArgs e)
         {
-            calibrationUserControl1.Visible = true;
+            //calibrationUserControl2.Clear();
+            CalibrationView.Visible = true;
             Text = $"Pylon Camera Application - Calibration [Untitled]";
         }
         private void OnSaveCalibrationToFile(object sender, EventArgs e)
         {
-            calibrationUserControl1.SaveCalibrationFile();
-
+            if (CalibrationView.SaveCalibrationFile())
+            {
+                Text = $"Pylon Camera Application - Calibration [{CalibrationView.FileName}]";
+            };
         }
         private void OnOpenCalibrationFile(object sender, EventArgs e)
         {
-            calibrationUserControl1.OpenCalibrationFile();
+            if (CalibrationView.OpenCalibrationFile())
+            {
+                Text = $"Pylon Camera Application - Calibration [{CalibrationView.FileName}]";
+            };
+
         }
     }
 }

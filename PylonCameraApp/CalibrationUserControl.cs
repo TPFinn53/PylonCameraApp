@@ -31,7 +31,8 @@ namespace PylonCameraApp
         private int imageWidth = 0;
         private PixelType imagePixelType;
         private bool isSelectingRange = false;
-        private RectangleAnnotation rectAnno = new RectangleAnnotation { MinimumX = 0, MaximumX = 0, MinimumY = 0, MaximumY = 0, TextRotation = 0, Text = "Valid Pixels", Fill = OxyColor.FromAColor(99, OxyColors.Blue), Stroke = OxyColors.Black, StrokeThickness = 1 };
+        private RectangleAnnotation rectAnno = null;
+
 
         // Declare a delegate used to communicate with the UI thread
         private delegate void UpdateStatusDelegate(string status);
@@ -42,9 +43,12 @@ namespace PylonCameraApp
             InitializeComponent();
             NumericUpDown nupFrames = (NumericUpDown)frameCount.NumericUpDownControl;
             nupFrames.Value = 10;
+            nupFrames.Enabled = false;
+
             toolStrip1.Items.Insert(1, (ToolStripItem)frameCount);
             backgroundWorker1.WorkerReportsProgress = true;
         }
+        public string FileName {set;get;} = "";
 
         // Sets the camera for image buffer access, image display, and frame rate display.
         public void SetCamera(GUICamera cam)
@@ -61,17 +65,32 @@ namespace PylonCameraApp
             imageHeight = data.Rows;
             imageWidth = data.Columns;
             latestAveragedFrameBuffer = data.Raster;
-            deadPixelMask = data.State;
+            deadPixelMask = data.Mask;
             imagePixelType = data.PixelType;
-
+            SelectionAnnotation rect = data.Selection;
+            rectAnno = new RectangleAnnotation
+            {
+                MinimumX = rect.MinimumX,
+                MaximumX = rect.MaximumX,
+                MinimumY = rect.MinimumY,
+                MaximumY = rect.MaximumY,
+                TextRotation = 0,
+                Text = "Valid Pixels",
+                Fill = OxyColor.FromAColor(99, 
+                OxyColors.Blue),
+                Stroke = OxyColors.Black,
+                StrokeThickness = 1
+            };
             ushort[] source = new ushort[(int)Math.Ceiling((double)latestAveragedFrameBuffer.Length / 2)];
             Buffer.BlockCopy(latestAveragedFrameBuffer, 0, source, 0, latestAveragedFrameBuffer.Length);
             int bins = GetMaxValue(imagePixelType);
             arrLineHistogram = GenerateHistogram(imageHeight, imageWidth, bins, source);
             arrLviLine = new ListViewItem[arrLineHistogram.Length];
             for (int i = 0; i < arrLviLine.Length; ++i) { arrLviLine[i] = new ListViewItem(new string[] { i.ToString(), i.ToString(), arrLineHistogram[i].Count.ToString() }); }
+
             PlotChart();
             PlotChartData();
+
             Visible = true;
         }
         public bool OpenCalibrationFile()
@@ -97,12 +116,18 @@ namespace PylonCameraApp
             {
                 CalibrationData data = ReadFromBinaryFile<CalibrationData>(openFileDialog1.FileName);
                 RestoreCalibration(data);
+                FileName = openFileDialog1.FileName;
                 return true;
             }
             return false;
         }
         public bool SaveCalibrationFile()
         {
+            if(FileName != "")
+            {
+                MessageBox.Show("Calibration data has already been committed file. No overwrite available");
+                return false;
+            }
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             saveFileDialog1.Filter = "Calibration Data |*.cal";
             saveFileDialog1.Title = "Save a Calibration File";
@@ -115,13 +140,21 @@ namespace PylonCameraApp
                 data.Rows = imageHeight;
                 data.Columns = imageWidth;
                 data.Raster = latestAveragedFrameBuffer;
-                data.State = deadPixelMask;
+                data.Mask = deadPixelMask;
                 data.Bins = arrLineHistogram.Length;
                 data.PixelType = imagePixelType;
+
+                SelectionAnnotation sel = new SelectionAnnotation();
+                sel.MaximumX = rectAnno.MaximumX;
+                sel.MaximumY = rectAnno.MaximumY;
+                sel.MinimumX = rectAnno.MinimumX;
+                sel.MinimumY = rectAnno.MinimumY;
+                data.Selection = sel;
 
                 WriteToBinaryFile(saveFileDialog1.FileName, data);
 
                 Text = $"Pylon Camera Application - Calibration [{saveFileDialog1.FileName}]";
+                FileName = saveFileDialog1.FileName;
 
                 //FileAttributes yourFile = File.GetAttributes(saveFileDialog1.FileName);
                 //File.SetAttributes(saveFileDialog1.FileName, FileAttributes.ReadOnly);
@@ -138,10 +171,9 @@ namespace PylonCameraApp
         }
        private Color ConvertPixelColor(ushort value)
         {
-            int red = (int)((value * Byte.MaxValue)/ UInt16.MaxValue);
-            int green = red;
-            int blue = red;
-            Color c = Color.FromArgb(red, green, blue);
+            int max = GetMaxValue(imagePixelType);
+            int grey = (int)((value * Byte.MaxValue)/ max);
+            Color c = Color.FromArgb(grey, grey, grey);
             return c;
         }
         public void Display16bitGrayScaleImage(ushort[] source)
@@ -231,6 +263,9 @@ namespace PylonCameraApp
         private void GuiCamera_GuiCameraGrabStarted(object sender, EventArgs e)
         {
             toolStripCaptureButton.Enabled = true;
+            toolStripFramesLabel.Enabled = true;
+            NumericUpDown nupFrames = (NumericUpDown)frameCount.NumericUpDownControl;
+            nupFrames.Enabled = true;
         }
 
         private void GuiCamera_GuiCameraClosedCamera(object sender, EventArgs e)
@@ -340,37 +375,17 @@ namespace PylonCameraApp
             model.Axes.Add(new LinearAxis() { Title = "Value", Position = AxisPosition.Bottom });
             model.Axes.Add(new LinearAxis() { Title = "Count", Position = AxisPosition.Left });
 
+            if(rectAnno != null) model.Annotations.Add(rectAnno);
+
             LineSeries lineseries = CreateLineSeries(arrLineHistogram);
             model.Series.Add(lineseries);
 
             plotView1.Model = model;
         }
-
-
-
-        private static void HistogramSeries_MouseDown(object sender, OxyMouseDownEventArgs e)
-        {
-            HistogramSeries series = sender as HistogramSeries;
-            if (series != null)
-            {
-                var nearest = series.GetNearestPoint(e.Position, false);
-                HistogramItem column = nearest.Item as HistogramItem;
-                if (column != null)
-                {
-                    if (column.Color == OxyColors.Yellow)
-                    {
-                        column.Color = OxyColors.Green;
-                    }
-                    else
-                    {
-                        column.Color = OxyColors.Yellow;
-                    }
-                    series.PlotModel.InvalidatePlot(true);
-                }
-            }
-        }
         private void Model_MouseUp(object sender, OxyMouseEventArgs e)
         {
+            if (FileName != String.Empty) return;
+
             isSelectingRange = false;
             for (int i = 0; i < deadPixelMask.Length; i++) deadPixelMask[i] = false;
             for (int i = (int)rectAnno.MinimumX; i <= (int)rectAnno.MaximumX; i++)
@@ -382,9 +397,10 @@ namespace PylonCameraApp
                 }
             }
         }
-
         private void Model_MouseMove(object sender, OxyMouseEventArgs e)
         {
+            if (FileName != String.Empty) return;
+
             if (!isSelectingRange) return;
             PlotController controller = sender as PlotController;
             ScreenPoint pt = e.Position;
@@ -405,6 +421,7 @@ namespace PylonCameraApp
         }
         private void Model_MouseDown(object sender, OxyMouseDownEventArgs e)
         {
+            if (FileName != String.Empty) return;
             PlotController controller = sender as PlotController;
             ScreenPoint pt = e.Position;
             ElementCollection<OxyPlot.Axes.Axis> axisList = plotView1.Model.Axes;
@@ -415,10 +432,18 @@ namespace PylonCameraApp
             DataPoint dataPointp = OxyPlot.Axes.Axis.InverseTransform(e.Position, xAxis, yAxis);
 
             // Do stuff with dataPointp ... 
-            rectAnno.MinimumX = dataPointp.X;
-            rectAnno.MaximumX = dataPointp.X;
-            rectAnno.MinimumY = yAxis.Minimum;
-            rectAnno.MaximumY = yAxis.Maximum;
+            rectAnno = new RectangleAnnotation
+            {
+                MinimumX = dataPointp.X,
+                MaximumX = dataPointp.X,
+                MinimumY = yAxis.Minimum,
+                MaximumY = yAxis.Maximum,
+                TextRotation = 0,
+                Text = "Valid Pixels",
+                Fill = OxyColor.FromAColor(99, OxyColors.Blue),
+                Stroke = OxyColors.Black, StrokeThickness = 1
+            };
+
             isSelectingRange = true;
 
             if (plotView1.Model != null)

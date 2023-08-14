@@ -47,6 +47,7 @@
             this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.settingsPanel1 = new PylonCameraApp.SettingsPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.userIDTextBox1 = new System.Windows.Forms.TextBox();
             this.serialNumberTextBox1 = new System.Windows.Forms.TextBox();
@@ -58,8 +59,7 @@
             this.cameraSelectionComboBox = new System.Windows.Forms.ComboBox();
             this.scanButton = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.settingsPanel1 = new PylonCameraApp.SettingsPanel();
-            this.calibrationUserControl1 = new PylonCameraApp.CalibrationUserControl();
+            this.CalibrationView = new PylonCameraApp.CalibrationUserControl();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -126,7 +126,7 @@
             this.calibrationToolStripMenuItem.Name = "calibrationToolStripMenuItem";
             this.calibrationToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.calibrationToolStripMenuItem.Text = "Calibration";
-            this.calibrationToolStripMenuItem.Click += new System.EventHandler(this.calibrationToolStripMenuItem_Click);
+            this.calibrationToolStripMenuItem.Click += new System.EventHandler(this.OnNewCalibrationFile);
             // 
             // alignmentToolStripMenuItem
             // 
@@ -222,10 +222,21 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.calibrationUserControl1);
+            this.splitContainer1.Panel2.Controls.Add(this.CalibrationView);
             this.splitContainer1.Size = new System.Drawing.Size(800, 429);
             this.splitContainer1.SplitterDistance = 341;
             this.splitContainer1.TabIndex = 2;
+            // 
+            // settingsPanel1
+            // 
+            this.settingsPanel1.AutoSize = true;
+            this.settingsPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.settingsPanel1.Location = new System.Drawing.Point(0, 85);
+            this.settingsPanel1.Margin = new System.Windows.Forms.Padding(2);
+            this.settingsPanel1.Name = "settingsPanel1";
+            this.settingsPanel1.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+            this.settingsPanel1.Size = new System.Drawing.Size(337, 340);
+            this.settingsPanel1.TabIndex = 2;
             // 
             // panel1
             // 
@@ -327,23 +338,14 @@
             this.scanButton.UseVisualStyleBackColor = true;
             this.scanButton.Click += new System.EventHandler(this.ScanButtonClick);
             // 
-            // settingsPanel1
+            // calibrationUserControl2
             // 
-            this.settingsPanel1.AutoSize = true;
-            this.settingsPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.settingsPanel1.Location = new System.Drawing.Point(0, 85);
-            this.settingsPanel1.Margin = new System.Windows.Forms.Padding(2);
-            this.settingsPanel1.Name = "settingsPanel1";
-            this.settingsPanel1.Size = new System.Drawing.Size(337, 340);
-            this.settingsPanel1.TabIndex = 2;
-            // 
-            // calibrationUserControl1
-            // 
-            this.calibrationUserControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.calibrationUserControl1.Location = new System.Drawing.Point(0, 0);
-            this.calibrationUserControl1.Name = "calibrationUserControl1";
-            this.calibrationUserControl1.Size = new System.Drawing.Size(451, 425);
-            this.calibrationUserControl1.TabIndex = 0;
+            this.CalibrationView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CalibrationView.FileName = "";
+            this.CalibrationView.Location = new System.Drawing.Point(0, 0);
+            this.CalibrationView.Name = "calibrationUserControl2";
+            this.CalibrationView.Size = new System.Drawing.Size(451, 425);
+            this.CalibrationView.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -396,7 +398,6 @@
         private System.Windows.Forms.Button openBySerialNumberButton1;
         private System.Windows.Forms.Button openSelectedButton1;
         private SettingsPanel settingsPanel1;
-        private CalibrationUserControl calibrationUserControl1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
@@ -409,6 +410,7 @@
         private System.Windows.Forms.ToolStripMenuItem acquisitionToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private CalibrationUserControl CalibrationView;
     }
 }
 

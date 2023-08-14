@@ -1,10 +1,8 @@
 ﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Basler.Pylon;
-
+using OxyPlot.Annotations;
 
 namespace PylonCameraApp
 {
@@ -15,7 +13,8 @@ namespace PylonCameraApp
         public int Columns { set; get; }
         public int Rows { set; get; }
         public byte[] Raster { set; get; }
-        public bool[] State { set; get; }
+        public bool[] Mask { set; get; }
         public PixelType PixelType { set; get; }
+        public SelectionAnnotation Selection { set; get; }
     }
 }
