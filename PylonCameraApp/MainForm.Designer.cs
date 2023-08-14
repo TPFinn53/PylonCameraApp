@@ -32,6 +32,16 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.calibrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.alignmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.acquisitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.calibrationToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.alignmentToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.acquisitionToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,16 +58,6 @@
             this.cameraSelectionComboBox = new System.Windows.Forms.ComboBox();
             this.scanButton = new System.Windows.Forms.Button();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.calibrationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.alignmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.acquisitionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.calibrationToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.alignmentToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.acquisitionToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsPanel1 = new PylonCameraApp.SettingsPanel();
             this.calibrationUserControl1 = new PylonCameraApp.CalibrationUserControl();
             this.statusStrip1.SuspendLayout();
@@ -74,7 +74,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 428);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 453);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(800, 22);
             this.statusStrip1.TabIndex = 0;
@@ -110,6 +110,76 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
+            // 
+            // newToolStripMenuItem
+            // 
+            this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.calibrationToolStripMenuItem,
+            this.alignmentToolStripMenuItem,
+            this.acquisitionToolStripMenuItem});
+            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.newToolStripMenuItem.Text = "New";
+            // 
+            // calibrationToolStripMenuItem
+            // 
+            this.calibrationToolStripMenuItem.Name = "calibrationToolStripMenuItem";
+            this.calibrationToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.calibrationToolStripMenuItem.Text = "Calibration";
+            this.calibrationToolStripMenuItem.Click += new System.EventHandler(this.calibrationToolStripMenuItem_Click);
+            // 
+            // alignmentToolStripMenuItem
+            // 
+            this.alignmentToolStripMenuItem.Name = "alignmentToolStripMenuItem";
+            this.alignmentToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.alignmentToolStripMenuItem.Text = "Alignment";
+            // 
+            // acquisitionToolStripMenuItem
+            // 
+            this.acquisitionToolStripMenuItem.Name = "acquisitionToolStripMenuItem";
+            this.acquisitionToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.acquisitionToolStripMenuItem.Text = "Acquisition";
+            // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.calibrationToolStripMenuItem1,
+            this.alignmentToolStripMenuItem1,
+            this.acquisitionToolStripMenuItem1});
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.openToolStripMenuItem.Text = "Open";
+            // 
+            // calibrationToolStripMenuItem1
+            // 
+            this.calibrationToolStripMenuItem1.Name = "calibrationToolStripMenuItem1";
+            this.calibrationToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.calibrationToolStripMenuItem1.Text = "Calibration";
+            this.calibrationToolStripMenuItem1.Click += new System.EventHandler(this.OnOpenCalibrationFile);
+            // 
+            // alignmentToolStripMenuItem1
+            // 
+            this.alignmentToolStripMenuItem1.Name = "alignmentToolStripMenuItem1";
+            this.alignmentToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.alignmentToolStripMenuItem1.Text = "Alignment";
+            // 
+            // acquisitionToolStripMenuItem1
+            // 
+            this.acquisitionToolStripMenuItem1.Name = "acquisitionToolStripMenuItem1";
+            this.acquisitionToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.acquisitionToolStripMenuItem1.Text = "Acquisition";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(100, 6);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.OnSaveCalibrationToFile);
             // 
             // editToolStripMenuItem
             // 
@@ -153,7 +223,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.calibrationUserControl1);
-            this.splitContainer1.Size = new System.Drawing.Size(800, 404);
+            this.splitContainer1.Size = new System.Drawing.Size(800, 429);
             this.splitContainer1.SplitterDistance = 341;
             this.splitContainer1.TabIndex = 2;
             // 
@@ -257,75 +327,6 @@
             this.scanButton.UseVisualStyleBackColor = true;
             this.scanButton.Click += new System.EventHandler(this.ScanButtonClick);
             // 
-            // newToolStripMenuItem
-            // 
-            this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.calibrationToolStripMenuItem,
-            this.alignmentToolStripMenuItem,
-            this.acquisitionToolStripMenuItem});
-            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.newToolStripMenuItem.Text = "New";
-            // 
-            // calibrationToolStripMenuItem
-            // 
-            this.calibrationToolStripMenuItem.Name = "calibrationToolStripMenuItem";
-            this.calibrationToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
-            this.calibrationToolStripMenuItem.Text = "Calibration";
-            this.calibrationToolStripMenuItem.Click += new System.EventHandler(this.calibrationToolStripMenuItem_Click);
-            // 
-            // alignmentToolStripMenuItem
-            // 
-            this.alignmentToolStripMenuItem.Name = "alignmentToolStripMenuItem";
-            this.alignmentToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
-            this.alignmentToolStripMenuItem.Text = "Alignment";
-            // 
-            // acquisitionToolStripMenuItem
-            // 
-            this.acquisitionToolStripMenuItem.Name = "acquisitionToolStripMenuItem";
-            this.acquisitionToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
-            this.acquisitionToolStripMenuItem.Text = "Acquisition";
-            // 
-            // openToolStripMenuItem
-            // 
-            this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.calibrationToolStripMenuItem1,
-            this.alignmentToolStripMenuItem1,
-            this.acquisitionToolStripMenuItem1});
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.openToolStripMenuItem.Text = "Open";
-            // 
-            // calibrationToolStripMenuItem1
-            // 
-            this.calibrationToolStripMenuItem1.Name = "calibrationToolStripMenuItem1";
-            this.calibrationToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
-            this.calibrationToolStripMenuItem1.Text = "Calibration";
-            // 
-            // alignmentToolStripMenuItem1
-            // 
-            this.alignmentToolStripMenuItem1.Name = "alignmentToolStripMenuItem1";
-            this.alignmentToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
-            this.alignmentToolStripMenuItem1.Text = "Alignment";
-            // 
-            // acquisitionToolStripMenuItem1
-            // 
-            this.acquisitionToolStripMenuItem1.Name = "acquisitionToolStripMenuItem1";
-            this.acquisitionToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
-            this.acquisitionToolStripMenuItem1.Text = "Acquisition";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
-            // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
-            // 
             // settingsPanel1
             // 
             this.settingsPanel1.AutoSize = true;
@@ -333,7 +334,7 @@
             this.settingsPanel1.Location = new System.Drawing.Point(0, 85);
             this.settingsPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.settingsPanel1.Name = "settingsPanel1";
-            this.settingsPanel1.Size = new System.Drawing.Size(337, 315);
+            this.settingsPanel1.Size = new System.Drawing.Size(337, 340);
             this.settingsPanel1.TabIndex = 2;
             // 
             // calibrationUserControl1
@@ -341,14 +342,14 @@
             this.calibrationUserControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.calibrationUserControl1.Location = new System.Drawing.Point(0, 0);
             this.calibrationUserControl1.Name = "calibrationUserControl1";
-            this.calibrationUserControl1.Size = new System.Drawing.Size(451, 400);
+            this.calibrationUserControl1.Size = new System.Drawing.Size(451, 425);
             this.calibrationUserControl1.TabIndex = 0;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 475);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);

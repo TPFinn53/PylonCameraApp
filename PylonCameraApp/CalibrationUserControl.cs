@@ -8,25 +8,30 @@ using System.IO;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
+using OxyPlot.Annotations;
+
 using Basler.Pylon;
+using System.Linq;
 
 namespace PylonCameraApp
 {
     public partial class CalibrationUserControl : UserControl
     {
-
         public delegate void StatusChange(string Status);
         public event StatusChange OnStatusChange;
 
-        private ToolStripNumberControl binCount = new ToolStripNumberControl();
         private ToolStripNumberControl frameCount = new ToolStripNumberControl();
         private GUICamera guiCamera;
         private ArrayList[] arrLineHistogram = null;
-        private ArrayList[] arrBarHistogram = null;
         private ListViewItem[] arrLviLine = null;
-        private ListViewItem[] arrLviBar = null;
         private PixelDataConverter converter = new PixelDataConverter();
-
+        private byte[] latestAveragedFrameBuffer = null;
+        private bool[] deadPixelMask = null;
+        private int imageHeight = 0;
+        private int imageWidth = 0;
+        private PixelType imagePixelType;
+        private bool isSelectingRange = false;
+        private RectangleAnnotation rectAnno = new RectangleAnnotation { MinimumX = 0, MaximumX = 0, MinimumY = 0, MaximumY = 0, TextRotation = 0, Text = "Valid Pixels", Fill = OxyColor.FromAColor(99, OxyColors.Blue), Stroke = OxyColors.Black, StrokeThickness = 1 };
 
         // Declare a delegate used to communicate with the UI thread
         private delegate void UpdateStatusDelegate(string status);
@@ -35,18 +40,12 @@ namespace PylonCameraApp
         public CalibrationUserControl()
         {
             InitializeComponent();
-            NumericUpDown nupBins = (NumericUpDown)binCount.NumericUpDownControl;
             NumericUpDown nupFrames = (NumericUpDown)frameCount.NumericUpDownControl;
-            nupBins.Value = nupBins.Maximum;
-            nupFrames.Value = 1;
-            toolStrip1.Items.Insert(5, (ToolStripItem)binCount);
-            toolStrip1.Items.Insert(8, (ToolStripItem)frameCount);
+            nupFrames.Value = 10;
+            toolStrip1.Items.Insert(1, (ToolStripItem)frameCount);
             backgroundWorker1.WorkerReportsProgress = true;
-            toolStripRadioButtonBarChart.Checked = true;
-
         }
 
-        public CalibrationData CalibrationDataFile { set; get; }
         // Sets the camera for image buffer access, image display, and frame rate display.
         public void SetCamera(GUICamera cam)
         {
@@ -56,6 +55,79 @@ namespace PylonCameraApp
 
             // Initialise the delegate
             this.updateStatusDelegate = new UpdateStatusDelegate(this.UpdateStatus);
+        }
+        private void RestoreCalibration(CalibrationData data)
+        {
+            imageHeight = data.Rows;
+            imageWidth = data.Columns;
+            latestAveragedFrameBuffer = data.Raster;
+            deadPixelMask = data.State;
+            imagePixelType = data.PixelType;
+
+            ushort[] source = new ushort[(int)Math.Ceiling((double)latestAveragedFrameBuffer.Length / 2)];
+            Buffer.BlockCopy(latestAveragedFrameBuffer, 0, source, 0, latestAveragedFrameBuffer.Length);
+            int bins = GetMaxValue(imagePixelType);
+            arrLineHistogram = GenerateHistogram(imageHeight, imageWidth, bins, source);
+            arrLviLine = new ListViewItem[arrLineHistogram.Length];
+            for (int i = 0; i < arrLviLine.Length; ++i) { arrLviLine[i] = new ListViewItem(new string[] { i.ToString(), i.ToString(), arrLineHistogram[i].Count.ToString() }); }
+            PlotChart();
+            PlotChartData();
+            Visible = true;
+        }
+        public bool OpenCalibrationFile()
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog
+            {
+                InitialDirectory = @"C:\",
+                Title = "Browse CAL Files",
+
+                CheckFileExists = true,
+                CheckPathExists = true,
+
+                DefaultExt = "cal",
+                Filter = "CAL files (*.cal)|*.cal",
+                FilterIndex = 2,
+                RestoreDirectory = true,
+
+                ReadOnlyChecked = true,
+                ShowReadOnly = true
+            };
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                CalibrationData data = ReadFromBinaryFile<CalibrationData>(openFileDialog1.FileName);
+                RestoreCalibration(data);
+                return true;
+            }
+            return false;
+        }
+        public bool SaveCalibrationFile()
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "Calibration Data |*.cal";
+            saveFileDialog1.Title = "Save a Calibration File";
+            saveFileDialog1.ShowDialog();
+
+            // If the file name is not an empty string open it for saving.
+            if (saveFileDialog1.FileName != "")
+            {
+                CalibrationData data = new CalibrationData();
+                data.Rows = imageHeight;
+                data.Columns = imageWidth;
+                data.Raster = latestAveragedFrameBuffer;
+                data.State = deadPixelMask;
+                data.Bins = arrLineHistogram.Length;
+                data.PixelType = imagePixelType;
+
+                WriteToBinaryFile(saveFileDialog1.FileName, data);
+
+                Text = $"Pylon Camera Application - Calibration [{saveFileDialog1.FileName}]";
+
+                //FileAttributes yourFile = File.GetAttributes(saveFileDialog1.FileName);
+                //File.SetAttributes(saveFileDialog1.FileName, FileAttributes.ReadOnly);
+                return true;
+            }
+            return false;
         }
         private void UpdateStatus(string status)
         {
@@ -111,23 +183,22 @@ namespace PylonCameraApp
 
             if (guiCamera != null)
             {
-                byte[] buffer = guiCamera.LatestFrameBuffer;
-                ushort[] source = new ushort[(int)Math.Ceiling((double)buffer.Length / 2)];
-                Buffer.BlockCopy(buffer, 0, source, 0, buffer.Length);
+                imageHeight = guiCamera.ImageHeight;
+                imageWidth = guiCamera.ImageWidth;
+                imagePixelType = guiCamera.ImagePixelType;
+                latestAveragedFrameBuffer = guiCamera.LatestAveragedFrameBuffer;
 
-                toolStripCaptureButton.Text = "Capture";
+                ushort[] source = new ushort[(int)Math.Ceiling((double)latestAveragedFrameBuffer.Length / 2)];
+                Buffer.BlockCopy(latestAveragedFrameBuffer, 0, source, 0, latestAveragedFrameBuffer.Length);
+
+                deadPixelMask = new bool[source.Length];
+                for (int i = 0; i < deadPixelMask.Length; i++) deadPixelMask[i] = false;
 
                 Display16bitGrayScaleImage(source);
 
-                NumericUpDown nupBins = (NumericUpDown)binCount.NumericUpDownControl;
-                NumericUpDown nupFrames = (NumericUpDown)frameCount.NumericUpDownControl;
-                nupBins.Enabled = true;
-                nupFrames.Enabled = true;
-
-
-                object paramObj0 = (int)(((NumericUpDown)(binCount.NumericUpDownControl)).Value);
-                object paramObj1 = guiCamera.ImageHeight;
-                object paramObj2 = guiCamera.ImageWidth;
+                object paramObj0 = imagePixelType;
+                object paramObj1 = imageHeight;
+                object paramObj2 = imageWidth;
                 object paramObj3 = source;
 
                 // The parameters you want to pass to the do work event of the background worker.
@@ -136,76 +207,6 @@ namespace PylonCameraApp
                 this.backgroundWorker1.RunWorkerAsync(parameters);
             }
         }
-
-
-        // Invalidate the image window every time the GuiCamera has supplied a new image.
-        // This causes a repaint of the image.
-        //private void OnImageReady(Object sender, EventArgs e)
-        //{
-        //    if (InvokeRequired)
-        //    {
-        //        // If called from a different thread, we must use the Invoke method to marshal the call to the proper thread.
-        //        BeginInvoke(new EventHandler<EventArgs>(OnImageReady), sender, e);
-        //        return;
-        //    }
-
-        //    if (guiCamera != null && IsRunning == true)
-        //    {
-        //        frames++;
-        //        string status = "Processing Frame:" + frames.ToString();
-        //        UpdateStatus(status);
-
-        //        IGrabResult grabResult = guiCamera.LatestGrabResult;
-
-        //        byte[] buffer = grabResult.PixelData as byte[];
-        //        ushort[] source = new ushort[(int)Math.Ceiling((double)buffer.Length / 2)];
-        //        Buffer.BlockCopy(buffer, 0, source, 0, buffer.Length);
-
-
-        //        if (simpleMovingAverageArray == null)
-        //            simpleMovingAverageArray = new SimpleMovingAverage[source.Length];
-
-        //        if (frames == ((NumericUpDown)(frameCount.NumericUpDownControl)).Value)
-        //        {
-        //            IsRunning = false;
-        //            toolStripCaptureButton.Text = "Capture";
-
-        //            Display16bitGrayScaleImage(grabResult);
-
-        //            for (int i = 0; i < source.Length; i++)
-        //            {
-        //                SimpleMovingAverage sma = simpleMovingAverageArray[i];
-        //                if (sma == null) simpleMovingAverageArray[i] = new SimpleMovingAverage(10);
-        //                simpleMovingAverageArray[i].Update(source[i]);
-        //            }
-        //            for (int i = 0; i < source.Length; i++)
-        //            {
-        //                SimpleMovingAverage sma = simpleMovingAverageArray[i];
-        //                source[i] = (ushort)sma.Average;
-        //            }
-
-        //            object paramObj0 = (int)(((NumericUpDown)(binCount.NumericUpDownControl)).Value);
-        //            object paramObj1 = guiCamera.ImageHeight;
-        //            object paramObj2 = guiCamera.ImageWidth;
-        //            object paramObj3 = source;
-
-
-        //            // The parameters you want to pass to the do work event of the background worker.
-        //            object[] parameters = new object[] { paramObj0, paramObj1, paramObj2, paramObj3 };
-
-        //            this.backgroundWorker1.RunWorkerAsync(parameters);
-        //        }
-        //        else
-        //        {
-        //            for (int i = 0; i < source.Length; i++)
-        //            {
-        //                SimpleMovingAverage sma = simpleMovingAverageArray[i];
-        //                if (sma == null) simpleMovingAverageArray[i] = new SimpleMovingAverage(10);
-        //                simpleMovingAverageArray[i].Update(source[i]);
-        //            }
-        //        }
-        //    }
-        //}
         protected void ConnectToCameraEvents()
         {
             // These events forward the events of the camera object.
@@ -214,7 +215,6 @@ namespace PylonCameraApp
             guiCamera.GuiCameraGrabStarted += GuiCamera_GuiCameraGrabStarted;
             guiCamera.GuiCameraGrabStopped += GuiCamera_GuiCameraGrabStopped;
             guiCamera.GuiCameraConnectionToCameraLost += GuiCamera_GuiCameraConnectionToCameraLost;
-            //guiCamera.GuiCameraFrameReadyForDisplay += OnImageReady;
             guiCamera.GuiCameraRunningFrameAverageForDisplay += OnRunningAverageImageReady;
         }
 
@@ -226,7 +226,6 @@ namespace PylonCameraApp
         private void GuiCamera_GuiCameraGrabStopped(object sender, EventArgs e)
         {
             toolStripCaptureButton.Enabled = false;
-            toolStripCaptureButton.Text = "Capture";
         }
 
         private void GuiCamera_GuiCameraGrabStarted(object sender, EventArgs e)
@@ -246,30 +245,11 @@ namespace PylonCameraApp
 
         private void OnClickCapture(object sender, EventArgs e)
         {
-            toolStripCaptureButton.Text = "Stop";
             NumericUpDown nupFrames = (NumericUpDown)frameCount.NumericUpDownControl;
-            NumericUpDown nupBins = (NumericUpDown)binCount.NumericUpDownControl;
             guiCamera.ImageRunningAverageCount = (int)nupFrames.Value;
-            nupBins.Enabled = false;
             nupFrames.Enabled = false;
+            toolStripCaptureButton.Enabled = false;
             guiCamera.ImageRunningAverage = true;
-        }
-        public ScatterSeries CreateScatterSeries(ArrayList[] arr)
-        {
-            ScatterSeries scatterSeries = new ScatterSeries()
-            {
-                Title = "Ideal Distribution"
-            };
-
-            for (int i = 0; i < arr.Length; i++)
-            {
-                if (arr[i].Count != 0)
-                {
-                    ScatterPoint pt = new ScatterPoint(i, arr[i].Count);
-                    scatterSeries.Points.Add(pt);
-                }
-            }
-            return scatterSeries;
         }
 
         public LineSeries CreateLineSeries(ArrayList[] arr)
@@ -287,50 +267,17 @@ namespace PylonCameraApp
             }
             return lineSeries;
         }
-        private int GetMaxValue()
+        private int GetMaxValue(PixelType imagePixelType)
         {
-            IParameter parm = guiCamera.Parameters[PLCamera.PixelFormat];
-
-            string str = parm.ToString();
-            switch (str)
-            {
-                case "Mono8":
-                    return 0xFF;
-                case "Mono12":
-                    return 0xFFF;
-                case "Mono16":
-                    return 0xFFFF;
-            }
-
-            return UInt16.MaxValue;
-        }
-        public HistogramSeries CreateHistogramSeries(ArrayList[] arr)
-        {
-            HistogramSeries series = new HistogramSeries()
-            {
-                Title = "Empirical Distribution",
-                FillColor = OxyColors.Yellow,
-                StrokeColor = OxyColors.Black,
-                StrokeThickness = 2
-            };
-            int width = GetMaxValue() / arr.Length;
-
-            for (int i = 0; i < arr.Length; i++)
-            {
-                double rangeStart = i * width;
-                double rangeEnd = rangeStart + width;
-                double area = arr[i].Count*width;
-                int count = arr[i].Count;
-                OxyColor color = OxyColors.Yellow;
-                HistogramItem item = new HistogramItem(rangeStart, rangeEnd, area, count, color);
-                series.Items.Add(item);
-            }
-            return series;
+            uint bitDepth = imagePixelType.BitDepth();
+            int maxRange = (int)Math.Pow(2, (double)bitDepth);
+            return maxRange;
         }
 
         private ArrayList[] GenerateHistogram(int rows, int cols, int bins, ushort[] data )
         {
             if (data == null || rows == 0 || cols == 0) return null;
+            int range = GetMaxValue(imagePixelType) / bins;
 
             ArrayList[] arr = new ArrayList[bins];
             for (int x = 0; x < arr.Length; x++)
@@ -338,31 +285,18 @@ namespace PylonCameraApp
                 arr[x] = new ArrayList();
             }
 
-            //Creating 2d Array
-            int index = 0;
-            ushort[,] twoDimensionalArray = new ushort[rows, cols];
-
-            for (int x = 0; x < rows; x++)
+            for (int row = 0; row < rows; row++)
             {
-                for (int y = 0; y < cols; y++)
+                for (int col = 0; col < cols; col++)
                 {
-                    twoDimensionalArray[x, y] = data[index];
-                    index++;
-                }
-            }
-            //sorting 2d Array into bins
-            for (int x = 0; x < rows; x++)
-            {
-                for (int y = 0; y < cols; y++)
-                {
-                    ushort val = twoDimensionalArray[x, y];
-                    int range = GetMaxValue() / bins;
-                    int i = val / range;
+                    int pos = col * rows + col;
+                    ushort val = data[pos];
+                    int bin = val / range;
                     Pixel pix = new Pixel();
-                    pix.Columns = y;
-                    pix.Rows = x;
+                    pix.Column = col;
+                    pix.Row = row;
                     pix.Value = val;
-                    arr[i].Add(pix);
+                    arr[bin].Add(pix);
                 }
             }
             return arr;
@@ -370,76 +304,50 @@ namespace PylonCameraApp
         private void OnDoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             object[] parameters = e.Argument as object[];
-            int bins = (int)parameters[0];
+            PixelType pix_type = (PixelType)parameters[0];
+            int bins = GetMaxValue(pix_type);
             int rows = (int)parameters[1];
             int cols = (int)parameters[2];
             ushort[] data = (ushort[])parameters[3];
 
-            arrLineHistogram = GenerateHistogram(rows, cols, GetMaxValue(), data);
-            arrBarHistogram = GenerateHistogram(rows, cols, bins, data);
+            arrLineHistogram = GenerateHistogram(rows, cols, bins, data);
 
             arrLviLine = new ListViewItem[arrLineHistogram.Length];
-            arrLviBar = new ListViewItem[arrBarHistogram.Length];
 
 
             for (int i = 0; i < arrLviLine.Length; ++i)
             {
                 arrLviLine[i] = new ListViewItem(new string[] { i.ToString(), i.ToString(), arrLineHistogram[i].Count.ToString() });
             }
-
-            int interval = GetMaxValue() / arrBarHistogram.Length;
-
-            for (int i = 0; i < arrBarHistogram.Length; i++)
-            {
-                int startpos = interval * i;
-                arrLviBar[i] = new ListViewItem(new string[] { i.ToString(), startpos.ToString(), arrBarHistogram[i].Count.ToString() });
-            }
         }
         private void PlotChartData()
         {
             if (arrLineHistogram == null) return;
-            if (arrBarHistogram == null) return;
-
-            if (toolStripRadioButtonBarChart.Checked)
-            {
-                listView1.Items.Clear();
-                listView1.Items.AddRange(arrLviBar);
-            }
-            else if (toolStripRadioButtonLineChart.Checked)
-            {
-                listView1.Items.Clear();
-                listView1.Items.AddRange(arrLviLine);
-            }
+            listView1.Items.Clear();
+            listView1.Items.AddRange(arrLviLine);
         }
 
         private void PlotChart()
         {
             if (arrLineHistogram == null) return;
-            if (arrBarHistogram == null) return;
 
             var model = new PlotModel();
             model.MouseDown += Model_MouseDown;
+            model.MouseMove += Model_MouseMove;
+            model.MouseUp += Model_MouseUp;
 
             // add two linear axes
             model.Axes.Add(new LinearAxis() { Title = "Value", Position = AxisPosition.Bottom });
             model.Axes.Add(new LinearAxis() { Title = "Count", Position = AxisPosition.Left });
 
-            if (toolStripRadioButtonBarChart.Checked)
-            {
-                HistogramSeries barseries = CreateHistogramSeries(arrBarHistogram);
-                barseries.MouseDown += HistogramSeries_MouseDown;
-                model.Series.Add(barseries);
-            }
-            else if (toolStripRadioButtonLineChart.Checked)
-            {
-                LineSeries lineseries = CreateLineSeries(arrLineHistogram);
-                model.Series.Add(lineseries);
+            LineSeries lineseries = CreateLineSeries(arrLineHistogram);
+            model.Series.Add(lineseries);
 
-            }
             plotView1.Model = model;
-            //plotView1.ActualController.UnbindMouseDown(OxyMouseButton.Left);
-
         }
+
+
+
         private static void HistogramSeries_MouseDown(object sender, OxyMouseDownEventArgs e)
         {
             HistogramSeries series = sender as HistogramSeries;
@@ -461,17 +369,73 @@ namespace PylonCameraApp
                 }
             }
         }
+        private void Model_MouseUp(object sender, OxyMouseEventArgs e)
+        {
+            isSelectingRange = false;
+            for (int i = 0; i < deadPixelMask.Length; i++) deadPixelMask[i] = false;
+            for (int i = (int)rectAnno.MinimumX; i <= (int)rectAnno.MaximumX; i++)
+            {
+                foreach(Pixel pix in arrLineHistogram[i])
+                {
+                    int index = pix.Row * imageWidth + pix.Column;
+                    deadPixelMask[index] = true;
+                }
+            }
+        }
 
+        private void Model_MouseMove(object sender, OxyMouseEventArgs e)
+        {
+            if (!isSelectingRange) return;
+            PlotController controller = sender as PlotController;
+            ScreenPoint pt = e.Position;
+            ElementCollection<OxyPlot.Axes.Axis> axisList = plotView1.Model.Axes;
+
+            Axis xAxis = axisList.FirstOrDefault(ax => ax.Position == AxisPosition.Bottom);
+            Axis yAxis = axisList.FirstOrDefault(ax => ax.Position == AxisPosition.Left);
+
+            DataPoint dataPointp = OxyPlot.Axes.Axis.InverseTransform(e.Position, xAxis, yAxis);
+
+            rectAnno.MaximumX = dataPointp.X;
+
+            if (plotView1.Model != null)
+            {
+                plotView1.InvalidatePlot(true);
+                plotView1.Update();
+            }
+        }
         private void Model_MouseDown(object sender, OxyMouseDownEventArgs e)
         {
             PlotController controller = sender as PlotController;
+            ScreenPoint pt = e.Position;
+            ElementCollection<OxyPlot.Axes.Axis> axisList = plotView1.Model.Axes;
+
+            Axis xAxis = axisList.FirstOrDefault(ax => ax.Position == AxisPosition.Bottom);
+            Axis yAxis = axisList.FirstOrDefault(ax => ax.Position == AxisPosition.Left);
+
+            DataPoint dataPointp = OxyPlot.Axes.Axis.InverseTransform(e.Position, xAxis, yAxis);
+
+            // Do stuff with dataPointp ... 
+            rectAnno.MinimumX = dataPointp.X;
+            rectAnno.MaximumX = dataPointp.X;
+            rectAnno.MinimumY = yAxis.Minimum;
+            rectAnno.MaximumY = yAxis.Maximum;
+            isSelectingRange = true;
+
+            if (plotView1.Model != null)
+            {
+                plotView1.Model.Annotations.Clear();
+                plotView1.Model.Annotations.Add(rectAnno);
+                plotView1.InvalidatePlot(true);
+                plotView1.Update();
+            }
+
         }
         private void OnRunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             PlotChart();
             PlotChartData();
-
-
+            ((NumericUpDown)frameCount.NumericUpDownControl).Enabled = true;
+            toolStripCaptureButton.Enabled = true;
         }
 
         private void OnProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
@@ -495,6 +459,29 @@ namespace PylonCameraApp
         {
             PlotChart();
             PlotChartData();
+        }
+        public static void WriteToBinaryFile<T>(string filePath, T objectToWrite, bool append = false)
+        {
+            using (Stream stream = File.Open(filePath, append ? FileMode.Append : FileMode.Create))
+            {
+                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                binaryFormatter.Serialize(stream, objectToWrite);
+            }
+        }
+
+        /// <summary>
+        /// Reads an object instance from a binary file.
+        /// </summary>
+        /// <typeparam name="T">The type of object to read from the binary file.</typeparam>
+        /// <param name="filePath">The file path to read the object instance from.</param>
+        /// <returns>Returns a new instance of the object read from the binary file.</returns>
+        public static T ReadFromBinaryFile<T>(string filePath)
+        {
+            using (Stream stream = File.Open(filePath, FileMode.Open))
+            {
+                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                return (T)binaryFormatter.Deserialize(stream);
+            }
         }
     }
 }

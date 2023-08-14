@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace PylonCameraApp
 {
+    [Serializable]
     public class Pixel
     {
-        public int Rows { get; set; }
-        public int Columns { get; set; }
+        public int Row { get; set; }
+        public int Column { get; set; }
         public ushort Value { get; set; }
+        public bool Masked { get; set; }
     }
 }

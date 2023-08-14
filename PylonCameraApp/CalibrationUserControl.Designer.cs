@@ -32,7 +32,6 @@
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.panel1 = new System.Windows.Forms.Panel();
             this.CalibrationTabs = new System.Windows.Forms.TabControl();
-            this.tabImage = new System.Windows.Forms.TabPage();
             this.tabCalibrationHistogram = new System.Windows.Forms.TabPage();
             this.plotView1 = new OxyPlot.WindowsForms.PlotView();
             this.tabCalibrationTable = new System.Windows.Forms.TabPage();
@@ -41,25 +40,21 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabCalibrationMask = new System.Windows.Forms.TabPage();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripLabelBins = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripFramesLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripCaptureButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripRadioButtonBarChart = new PylonCameraApp.ToolStripRadioButton();
-            this.toolStripRadioButtonLineChart = new PylonCameraApp.ToolStripRadioButton();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.panel1.SuspendLayout();
             this.CalibrationTabs.SuspendLayout();
-            this.tabImage.SuspendLayout();
             this.tabCalibrationHistogram.SuspendLayout();
             this.tabCalibrationTable.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
+            this.tabCalibrationMask.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // backgroundWorker1
@@ -80,7 +75,6 @@
             // 
             // CalibrationTabs
             // 
-            this.CalibrationTabs.Controls.Add(this.tabImage);
             this.CalibrationTabs.Controls.Add(this.tabCalibrationHistogram);
             this.CalibrationTabs.Controls.Add(this.tabCalibrationTable);
             this.CalibrationTabs.Controls.Add(this.tabCalibrationMask);
@@ -90,16 +84,6 @@
             this.CalibrationTabs.SelectedIndex = 0;
             this.CalibrationTabs.Size = new System.Drawing.Size(500, 275);
             this.CalibrationTabs.TabIndex = 2;
-            // 
-            // tabImage
-            // 
-            this.tabImage.Controls.Add(this.panel2);
-            this.tabImage.Location = new System.Drawing.Point(4, 22);
-            this.tabImage.Name = "tabImage";
-            this.tabImage.Size = new System.Drawing.Size(492, 249);
-            this.tabImage.TabIndex = 3;
-            this.tabImage.Text = "Image";
-            this.tabImage.UseVisualStyleBackColor = true;
             // 
             // tabCalibrationHistogram
             // 
@@ -164,6 +148,7 @@
             // 
             // tabCalibrationMask
             // 
+            this.tabCalibrationMask.Controls.Add(this.panel2);
             this.tabCalibrationMask.Location = new System.Drawing.Point(4, 22);
             this.tabCalibrationMask.Name = "tabCalibrationMask";
             this.tabCalibrationMask.Size = new System.Drawing.Size(492, 249);
@@ -171,40 +156,40 @@
             this.tabCalibrationMask.Text = "Mask";
             this.tabCalibrationMask.UseVisualStyleBackColor = true;
             // 
+            // panel2
+            // 
+            this.panel2.AutoScroll = true;
+            this.panel2.AutoSize = true;
+            this.panel2.Controls.Add(this.pictureBox1);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(492, 249);
+            this.panel2.TabIndex = 1;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(492, 249);
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            // 
             // toolStrip1
             // 
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripRadioButtonBarChart,
-            this.toolStripRadioButtonLineChart,
-            this.toolStripSeparator4,
-            this.toolStripLabelBins,
-            this.toolStripSeparator1,
             this.toolStripFramesLabel,
             this.toolStripSeparator2,
-            this.toolStripCaptureButton});
+            this.toolStripCaptureButton,
+            this.toolStripProgressBar1});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(500, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripLabelBins
-            // 
-            this.toolStripLabelBins.Name = "toolStripLabelBins";
-            this.toolStripLabelBins.Size = new System.Drawing.Size(29, 22);
-            this.toolStripLabelBins.Text = "Bins";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
             // toolStripFramesLabel
             // 
@@ -228,52 +213,10 @@
             this.toolStripCaptureButton.Text = "Capture";
             this.toolStripCaptureButton.Click += new System.EventHandler(this.OnClickCapture);
             // 
-            // toolStripRadioButtonBarChart
+            // toolStripProgressBar1
             // 
-            this.toolStripRadioButtonBarChart.CheckedColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(113)))), ((int)(((byte)(179)))));
-            this.toolStripRadioButtonBarChart.CheckedColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(139)))), ((int)(((byte)(205)))));
-            this.toolStripRadioButtonBarChart.CheckOnClick = true;
-            this.toolStripRadioButtonBarChart.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripRadioButtonBarChart.Image = ((System.Drawing.Image)(resources.GetObject("toolStripRadioButtonBarChart.Image")));
-            this.toolStripRadioButtonBarChart.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripRadioButtonBarChart.Name = "toolStripRadioButtonBarChart";
-            this.toolStripRadioButtonBarChart.RadioButtonGroupId = 0;
-            this.toolStripRadioButtonBarChart.Size = new System.Drawing.Size(60, 22);
-            this.toolStripRadioButtonBarChart.Text = "Bar Chart";
-            this.toolStripRadioButtonBarChart.Click += new System.EventHandler(this.OnClick_BarChartSelection);
-            // 
-            // toolStripRadioButtonLineChart
-            // 
-            this.toolStripRadioButtonLineChart.CheckedColor1 = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(113)))), ((int)(((byte)(179)))));
-            this.toolStripRadioButtonLineChart.CheckedColor2 = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(139)))), ((int)(((byte)(205)))));
-            this.toolStripRadioButtonLineChart.CheckOnClick = true;
-            this.toolStripRadioButtonLineChart.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripRadioButtonLineChart.Image = ((System.Drawing.Image)(resources.GetObject("toolStripRadioButtonLineChart.Image")));
-            this.toolStripRadioButtonLineChart.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripRadioButtonLineChart.Name = "toolStripRadioButtonLineChart";
-            this.toolStripRadioButtonLineChart.RadioButtonGroupId = 0;
-            this.toolStripRadioButtonLineChart.Size = new System.Drawing.Size(65, 22);
-            this.toolStripRadioButtonLineChart.Text = "Line Chart";
-            this.toolStripRadioButtonLineChart.Click += new System.EventHandler(this.OnClick_LineChartSelection);
-            // 
-            // panel2
-            // 
-            this.panel2.AutoScroll = true;
-            this.panel2.Controls.Add(this.pictureBox1);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(492, 249);
-            this.panel2.TabIndex = 0;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(420, 227);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox1.TabIndex = 1;
-            this.pictureBox1.TabStop = false;
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 22);
             // 
             // CalibrationUserControl
             // 
@@ -285,14 +228,14 @@
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.CalibrationTabs.ResumeLayout(false);
-            this.tabImage.ResumeLayout(false);
             this.tabCalibrationHistogram.ResumeLayout(false);
             this.tabCalibrationTable.ResumeLayout(false);
+            this.tabCalibrationMask.ResumeLayout(false);
+            this.tabCalibrationMask.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -304,11 +247,6 @@
         private System.Windows.Forms.TabPage tabCalibrationHistogram;
         private OxyPlot.WindowsForms.PlotView plotView1;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private ToolStripRadioButton toolStripRadioButtonBarChart;
-        private ToolStripRadioButton toolStripRadioButtonLineChart;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripLabel toolStripLabelBins;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripLabel toolStripFramesLabel;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton toolStripCaptureButton;
@@ -318,7 +256,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.TabPage tabCalibrationMask;
-        private System.Windows.Forms.TabPage tabImage;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.PictureBox pictureBox1;
     }

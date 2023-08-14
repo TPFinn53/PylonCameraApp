@@ -7,11 +7,30 @@ namespace PylonCameraApp
     public partial class SettingsPanel : UserControl
     {
         private GUICamera guiCamera = new GUICamera();
+        private EnumerationComboBoxUserControl testImageControl;
+        private Label testImageLabel;
 
         // Create and set up the pane.
         public SettingsPanel()
         {
             InitializeComponent();
+
+            //
+            // testImageControl
+            //
+            this.testImageControl = new EnumerationComboBoxUserControl();
+            this.testImageControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.testImageControl.Location = new System.Drawing.Point(12, 0);
+            this.testImageControl.Name = "testImageControl";
+            this.testImageControl.Size = new System.Drawing.Size(201, 57);
+            this.testImageControl.TabIndex = 0;
+            this.testImageControl.DefaultName = "Test Image Selector";
+
+            this.testImageLabel = new System.Windows.Forms.Label();
+            this.testImageLabel.Text = "Test Pattern";
+            this.settingsTableLayout.Controls.Add(this.testImageLabel, 0, 8);
+            this.settingsTableLayout.Controls.Add(this.testImageControl, 1, 8);
 
             pictureWindow.SetCamera(guiCamera);
 
@@ -45,6 +64,8 @@ namespace PylonCameraApp
                 pixelFormatControl.Parameter = parameters[PLCamera.PixelFormat];
                 triggerModeControl.Parameter = parameters[PLCamera.TriggerMode];
                 triggerSourceControl.Parameter = parameters[PLCamera.TriggerSource];
+                testImageControl.Parameter = parameters[PLCamera.TestImageSelector];
+
                 // If a control is not present in the current camera, use a different control. 
                 if (parameters.Contains(PLCamera.Gain))
                 {
@@ -77,6 +98,7 @@ namespace PylonCameraApp
             pixelFormatControl.Parameter = null;
             gainControl.Parameter = null;
             exposureControl.Parameter = null;
+            testImageControl.Parameter = null;
         }
 
         // Event handler for the Continuous Shot button.
@@ -145,6 +167,8 @@ namespace PylonCameraApp
             triggerSourceControl.Enabled = opened;
             triggerModeControl.Enabled = opened;
             pixelFormatControl.Enabled = !grabbing && opened;
+            testImageControl.Enabled = !grabbing && opened;
+
             invertPixelFormatCheckbox.Enabled = opened;
             softwareTriggerExecuteButton.Enabled = grabbing;
         }

@@ -216,76 +216,16 @@ namespace PylonCameraApp
         private void calibrationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             calibrationUserControl1.Visible = true;
-            CalibrationData data = new CalibrationData();
-            data.Title = "Untitled";
-            calibrationUserControl1.CalibrationDataFile = data;
-            Text = $"Pylon Camera Application - Calibration [{data.Title}]";
+            Text = $"Pylon Camera Application - Calibration [Untitled]";
         }
-
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void OnSaveCalibrationToFile(object sender, EventArgs e)
         {
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.Filter = "Calibration Data |*.cal";
-            saveFileDialog1.Title = "Save a Calibration File";
-            saveFileDialog1.ShowDialog();
+            calibrationUserControl1.SaveCalibrationFile();
 
-            // If the file name is not an empty string open it for saving.
-            if (saveFileDialog1.FileName != "")
-            {
-                WriteToBinaryFile(saveFileDialog1.FileName, calibrationUserControl1.CalibrationDataFile);
-
-                // Saves the Image via a FileStream created by the OpenFile method.
-                System.IO.FileStream fs =
-                    (System.IO.FileStream)saveFileDialog1.OpenFile();
-                // Saves the Image in the appropriate ImageFormat based upon the
-                // File type selected in the dialog box.
-                // NOTE that the FilterIndex property is one-based.
-                switch (saveFileDialog1.FilterIndex)
-                {
-                    case 1:
-                        break;
-
-                    case 2:
-                        break;
-
-                    case 3:
-                        break;
-                }
-
-                fs.Close();
-            }
         }
-        /// <summary>
-        /// Writes the given object instance to a binary file.
-        /// <para>Object type (and all child types) must be decorated with the [Serializable] attribute.</para>
-        /// <para>To prevent a variable from being serialized, decorate it with the [NonSerialized] attribute; cannot be applied to properties.</para>
-        /// </summary>
-        /// <typeparam name="T">The type of object being written to the binary file.</typeparam>
-        /// <param name="filePath">The file path to write the object instance to.</param>
-        /// <param name="objectToWrite">The object instance to write to the binary file.</param>
-        /// <param name="append">If false the file will be overwritten if it already exists. If true the contents will be appended to the file.</param>
-        public static void WriteToBinaryFile<T>(string filePath, T objectToWrite, bool append = false)
+        private void OnOpenCalibrationFile(object sender, EventArgs e)
         {
-            using (Stream stream = File.Open(filePath, append ? FileMode.Append : FileMode.Create))
-            {
-                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                binaryFormatter.Serialize(stream, objectToWrite);
-            }
-        }
-
-        /// <summary>
-        /// Reads an object instance from a binary file.
-        /// </summary>
-        /// <typeparam name="T">The type of object to read from the binary file.</typeparam>
-        /// <param name="filePath">The file path to read the object instance from.</param>
-        /// <returns>Returns a new instance of the object read from the binary file.</returns>
-        public static T ReadFromBinaryFile<T>(string filePath)
-        {
-            using (Stream stream = File.Open(filePath, FileMode.Open))
-            {
-                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                return (T)binaryFormatter.Deserialize(stream);
-            }
+            calibrationUserControl1.OpenCalibrationFile();
         }
     }
 }

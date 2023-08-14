@@ -60,8 +60,30 @@ namespace PylonCameraApp
             double frametime = 1 / RENDERFPS;
             frameDurationTicks = (int)(System.Diagnostics.Stopwatch.Frequency * frametime);
         }
+        public byte[] LatestAveragedFrameBuffer
+        {
+            get
+            {
+                lock (monitor)
+                {
+                    if (movingAverageData != null)
+                    {
+                        ushort[] arr = new ushort[movingAverageData.Length];
+                        for(int i = 0; i < movingAverageData.Length; i++)
+                        {
+                            arr[i] = (ushort)movingAverageData[i].Average;
+                        }
+                        byte[] data = new byte[movingAverageData.Length*2];
+                        Buffer.BlockCopy(arr, 0, data, 0, arr.Length);
 
-        //Thread-safe getter for latest frame.Returns latest frame to display or null if no frame is present.
+                        movingAverageData = null;
+                        return data;
+                    }
+                    return null;
+                }
+            }
+        }
+
         public byte[] LatestFrameBuffer
         {
             get
@@ -94,32 +116,11 @@ namespace PylonCameraApp
             }
         }
 
-        //public IGrabResult LatestGrabResult
-        //{
-        //    get
-        //    {
-        //        lock (monitor)
-        //        {
-        //            return latestGrabResult;
-        //        }
-        //    }
-        //    set
-        //    {
-        //        lock (monitor)
-        //        {
-        //            if (latestGrabResult != null)
-        //            {
-        //                latestGrabResult.Dispose();
-        //                latestGrabResult = value;
-        //            }
-        //        }
-        //    }
-        //}
-
-
 
         // Getter-Setter for image width.
+        public PixelType ImagePixelType { get; set; }
 
+        // Getter-Setter for image width.
         public int ImageWidth { get; set; }
 
         // Getter for image width.
@@ -427,6 +428,7 @@ namespace PylonCameraApp
 
                         ImageWidth = grabResult.Width;
                         ImageHeight = grabResult.Height;
+                        ImagePixelType = grabResult.PixelTypeValue;
 
                         byte[] buffer = grabResult.PixelData as byte[];
 

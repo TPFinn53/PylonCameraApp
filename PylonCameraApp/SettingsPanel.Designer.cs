@@ -38,20 +38,20 @@
             this.gainLabel = new System.Windows.Forms.Label();
             this.triggerSourceLabel = new System.Windows.Forms.Label();
             this.invertPixelFormatCheckbox = new System.Windows.Forms.CheckBox();
-            this.exposureControl = new ParameterSliderUserControl();
-            this.gainControl = new ParameterSliderUserControl();
-            this.triggerModeControl = new EnumerationComboBoxUserControl();
-            this.triggerSourceControl = new EnumerationComboBoxUserControl();
+            this.exposureControl = new PylonCameraApp.ParameterSliderUserControl();
+            this.gainControl = new PylonCameraApp.ParameterSliderUserControl();
+            this.triggerModeControl = new PylonCameraApp.EnumerationComboBoxUserControl();
+            this.triggerSourceControl = new PylonCameraApp.EnumerationComboBoxUserControl();
             this.tableLayoutPanelExposureTime = new System.Windows.Forms.TableLayoutPanel();
             this.exposureTimeValueLabel = new System.Windows.Forms.Label();
             this.exposureTimeLabel = new System.Windows.Forms.Label();
             this.invertPixelLabel = new System.Windows.Forms.Label();
-            this.pixelFormatControl = new EnumerationComboBoxUserControl();
+            this.pixelFormatControl = new PylonCameraApp.EnumerationComboBoxUserControl();
             this.panelForButtons = new System.Windows.Forms.Panel();
             this.singleShotButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
             this.continuousShotButton = new System.Windows.Forms.Button();
-            this.pictureWindow = new PictureWindow();
+            this.pictureWindow = new PylonCameraApp.PictureWindow();
             this.settingsTableLayout.SuspendLayout();
             this.tableLayoutPanelGain.SuspendLayout();
             this.tableLayoutPanelExposureTime.SuspendLayout();
@@ -79,10 +79,10 @@
             this.settingsTableLayout.Controls.Add(this.pixelFormatControl, 1, 3);
             this.settingsTableLayout.Controls.Add(this.panelForButtons, 0, 0);
             this.settingsTableLayout.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.settingsTableLayout.Location = new System.Drawing.Point(0, 370);
+            this.settingsTableLayout.Location = new System.Drawing.Point(0, 330);
             this.settingsTableLayout.Margin = new System.Windows.Forms.Padding(2);
             this.settingsTableLayout.Name = "settingsTableLayout";
-            this.settingsTableLayout.RowCount = 8;
+            this.settingsTableLayout.RowCount = 9;
             this.settingsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.settingsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.settingsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
@@ -91,7 +91,8 @@
             this.settingsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.settingsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.settingsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.settingsTableLayout.Size = new System.Drawing.Size(340, 248);
+            this.settingsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.settingsTableLayout.Size = new System.Drawing.Size(340, 288);
             this.settingsTableLayout.TabIndex = 28;
             // 
             // softwareTriggerExecuteButton
@@ -192,7 +193,7 @@
             this.invertPixelFormatCheckbox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.invertPixelFormatCheckbox.AutoSize = true;
             this.invertPixelFormatCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.invertPixelFormatCheckbox.Location = new System.Drawing.Point(143, 220);
+            this.invertPixelFormatCheckbox.Location = new System.Drawing.Point(143, 216);
             this.invertPixelFormatCheckbox.Name = "invertPixelFormatCheckbox";
             this.invertPixelFormatCheckbox.Size = new System.Drawing.Size(59, 17);
             this.invertPixelFormatCheckbox.TabIndex = 16;
@@ -283,7 +284,7 @@
             // 
             this.invertPixelLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.invertPixelLabel.AutoSize = true;
-            this.invertPixelLabel.Location = new System.Drawing.Point(0, 222);
+            this.invertPixelLabel.Location = new System.Drawing.Point(0, 218);
             this.invertPixelLabel.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
             this.invertPixelLabel.Name = "invertPixelLabel";
             this.invertPixelLabel.Size = new System.Drawing.Size(64, 13);
@@ -349,13 +350,13 @@
             // 
             // pictureWindow
             // 
-            this.pictureWindow.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.pictureWindow.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureWindow.Location = new System.Drawing.Point(0, 0);
             this.pictureWindow.Margin = new System.Windows.Forms.Padding(2);
             this.pictureWindow.Name = "pictureWindow";
-            this.pictureWindow.Size = new System.Drawing.Size(338, 370);
+            this.pictureWindow.Size = new System.Drawing.Size(338, 326);
             this.pictureWindow.TabIndex = 32;
             // 
             // SettingsPanel
@@ -367,7 +368,8 @@
             this.Controls.Add(this.settingsTableLayout);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "SettingsPanel";
-            this.Size = new System.Drawing.Size(340, 618);
+            this.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+            this.Size = new System.Drawing.Size(345, 618);
             this.settingsTableLayout.ResumeLayout(false);
             this.settingsTableLayout.PerformLayout();
             this.tableLayoutPanelGain.ResumeLayout(false);
