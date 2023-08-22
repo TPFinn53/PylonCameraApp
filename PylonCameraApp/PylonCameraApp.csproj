@@ -72,6 +72,7 @@
     </Compile>
     <Compile Include="GUICamera.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="ListViewEx.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

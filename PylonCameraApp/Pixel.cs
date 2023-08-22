@@ -12,6 +12,5 @@ namespace PylonCameraApp
         public int Row { get; set; }
         public int Column { get; set; }
         public ushort Value { get; set; }
-        public bool Masked { get; set; }
     }
 }

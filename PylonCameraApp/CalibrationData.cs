@@ -12,7 +12,7 @@ namespace PylonCameraApp
         public int Bins { set; get; }
         public int Columns { set; get; }
         public int Rows { set; get; }
-        public byte[] Raster { set; get; }
+        public ushort[] Raster { set; get; }
         public bool[] Mask { set; get; }
         public PixelType PixelType { set; get; }
         public SelectionAnnotation Selection { set; get; }

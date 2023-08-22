@@ -31,9 +31,10 @@ namespace PylonCameraApp
 
         // Buffer for latest image.
         private Bitmap latestFrame = null;
-        private byte[] latestPixelFrame = null;
+        private byte[] latestBuffer = null;
+
+        //private ushort[] latestPixelFrame = null;
         //private IGrabResult latestGrabResult = null;
-        private SimpleMovingAverage[] movingAverageData = null;
 
         // The pixel data converter is used for converting grabbed images to a pixel format that can be displayed.
         private PixelDataConverter converter = new PixelDataConverter();
@@ -50,7 +51,6 @@ namespace PylonCameraApp
         public event EventHandler GuiCameraGrabStopped;
         public event EventHandler GuiCameraConnectionToCameraLost;
         public event EventHandler GuiCameraFrameReadyForDisplay;
-        public event EventHandler GuiCameraRunningFrameAverageForDisplay;
 
         // Create the GUI camera object.
         public GUICamera()
@@ -60,43 +60,21 @@ namespace PylonCameraApp
             double frametime = 1 / RENDERFPS;
             frameDurationTicks = (int)(System.Diagnostics.Stopwatch.Frequency * frametime);
         }
-        public byte[] LatestAveragedFrameBuffer
+         public byte[] LatestFrameBuffer
         {
             get
             {
                 lock (monitor)
                 {
-                    if (movingAverageData != null)
-                    {
-                        ushort[] arr = new ushort[movingAverageData.Length];
-                        for(int i = 0; i < movingAverageData.Length; i++)
-                        {
-                            arr[i] = (ushort)movingAverageData[i].Average;
-                        }
-                        byte[] data = new byte[movingAverageData.Length*2];
-                        Buffer.BlockCopy(arr, 0, data, 0, arr.Length);
+                    return latestBuffer;
 
-                        movingAverageData = null;
-                        return data;
-                    }
-                    return null;
-                }
-            }
-        }
-
-        public byte[] LatestFrameBuffer
-        {
-            get
-            {
-                lock (monitor)
-                {
-                    if (latestPixelFrame != null)
-                    {
-                        byte[] data = latestPixelFrame;
-                        latestPixelFrame = null;
-                        return data;
-                    }
-                    return null;
+                    //if (latestBuffer != null)
+                    //{
+                    //    byte[] data = latestBuffer;
+                    //    latestBuffer = null;
+                    //    return data;
+                    //}
+                    //return null;
                 }
             }
         }
@@ -116,7 +94,6 @@ namespace PylonCameraApp
             }
         }
 
-
         // Getter-Setter for image width.
         public PixelType ImagePixelType { get; set; }
 
@@ -127,18 +104,7 @@ namespace PylonCameraApp
         public int ImageHeight { get; set; }
 
         // Getter for image count.
-        public int ImageCount
-        {
-            get
-            {
-                return imageCount;
-            }
-        }
-        // Getter-Setter for image Running Average count.
-        public int ImageRunningAverageCount { get; set; } = 1;
-
-        // Getter-Setter for image Running Average ON-OFF.
-        public bool ImageRunningAverage { get; set; } = false;
+        public int ImageCount { get { return imageCount; } }
 
         // Getter for error count.
         public int ErrorCount
@@ -299,6 +265,8 @@ namespace PylonCameraApp
             {
                 // Open the camera.
                 camera.Open();
+                camera.Parameters[PLCamera.PixelFormat].SetValue(PLCamera.PixelFormat.Mono12);
+                camera.Parameters[PLCamera.TestImageSelector].SetValue(PLCamera.TestImageSelector.Off);
             }
         }
 
@@ -399,7 +367,82 @@ namespace PylonCameraApp
 
             camera.ExecuteSoftwareTrigger();
         }
+        private int GetMaxValue(PixelType imagePixelType)
+        {
+            uint bitDepth = imagePixelType.BitDepth();
+            int maxRange = (int)Math.Pow(2, (double)bitDepth);
+            return maxRange;
+        }
+        private void SetDeadPixels(byte[] buffer, int columns, int rows)
+        {
+            ushort max = (ushort)GetMaxValue(ImagePixelType);
+            byte upper = (byte)(max >> 8);
+            byte lower = (byte)(max & 0xff);
+            for (int col = 10; col < columns - 10; col++)
+            {
+                int row = rows / 2;
+                int index = (row * columns + col) * 2;
+                buffer[index] = 0x0;
+                buffer[index + 1] = 0x0;
+            }
+            for (int row = 10; row < rows - 10; row++)
+            {
+                int col = columns / 2;
+                int index = (row * columns + col) * 2;
+                buffer[index] = 0x0;
+                buffer[index + 1] = 0x0;
+            }
 
+
+            for (int col = 10; col < columns - 10; col++)
+            {
+                int row = rows / 4;
+                int index = (row * columns + col) * 2;
+                buffer[index] = lower;
+                buffer[index + 1] = upper;
+            }
+            for (int row = 10; row < rows - 10; row++)
+            {
+                int col = columns / 4;
+                int index = (row * columns + col) * 2;
+                buffer[index] = lower;
+                buffer[index + 1] = upper;
+            }
+
+            for (int col = 10; col < columns - 10; col++)
+            {
+                int row = (rows / 4) * 3;
+                int index = (row * columns + col) * 2;
+                buffer[index] = lower;
+                buffer[index + 1] = upper;
+            }
+
+            for (int row = 10; row < rows - 10; row++)
+            {
+                int col = (columns / 4) * 3;
+                int index = (row * columns + col) * 2;
+                buffer[index] = lower;
+                buffer[index + 1] = upper;
+
+            }
+        }
+        private void SetDeadPixels(Bitmap bitmap)
+        {
+            for (int col = 10; col < bitmap.Width - 10; col++)
+                bitmap.SetPixel(col, bitmap.Height / 2, Color.Black);
+            for (int row = 10; row < bitmap.Height - 10; row++)
+                bitmap.SetPixel(bitmap.Width / 2, row, Color.Black);
+
+            for (int col = 10; col < bitmap.Width - 10; col++)
+                bitmap.SetPixel(col, bitmap.Height / 4, Color.White);
+            for (int row = 10; row < bitmap.Height - 10; row++)
+                bitmap.SetPixel(bitmap.Width / 4, row, Color.White);
+
+            for (int col = 10; col < bitmap.Width - 10; col++)
+                bitmap.SetPixel(col, (bitmap.Height / 4) * 3, Color.White);
+            for (int row = 10; row < bitmap.Height - 10; row++)
+                bitmap.SetPixel((bitmap.Width / 4) * 3, row, Color.White);
+        }
         // Image event handler. Shows the captured frame in the image window.
         public void OnImageGrabbed(Object sender, ImageGrabbedEventArgs e)
         {
@@ -425,6 +468,7 @@ namespace PylonCameraApp
                     if (!stopwatch.IsRunning || stopwatch.ElapsedTicks >= frameDurationTicks)
                     {
                         stopwatch.Restart();
+                        //ImageWindow.DisplayImage(0, grabResult);
 
                         ImageWidth = grabResult.Width;
                         ImageHeight = grabResult.Height;
@@ -432,15 +476,17 @@ namespace PylonCameraApp
 
                         byte[] buffer = grabResult.PixelData as byte[];
 
-                        lock (monitor)
+                        //lock (monitor)
                         {
-                            if (latestPixelFrame != null)
+                            if (latestBuffer == null)
                             {
-                                latestPixelFrame = null;
+                                latestBuffer = new byte[buffer.Length];
                             }
-                            latestPixelFrame = new byte[buffer.Length];
-                            Buffer.BlockCopy(buffer, 0, latestPixelFrame, 0, buffer.Length);
+                            
+                            Buffer.BlockCopy(buffer, 0, latestBuffer, 0, buffer.Length);
+                            SetDeadPixels(latestBuffer, ImageWidth, ImageHeight);
                         }
+
                         Bitmap bitmap = new Bitmap(grabResult.Width, grabResult.Height, PixelFormat.Format32bppRgb);
                         
                         // Lock the bits of the bitmap.
@@ -452,6 +498,8 @@ namespace PylonCameraApp
                         converter.Convert(ptrBmp, bmpData.Stride * bitmap.Height, grabResult);
                         bitmap.UnlockBits(bmpData);
 
+                        SetDeadPixels(bitmap);
+
                         // Resize the bitmap according to screen size and write it in the image buffer.
                         lock (monitor)
                         {
@@ -461,34 +509,6 @@ namespace PylonCameraApp
                             }
                             latestFrame = bitmap;
                         }
-
-                        if (ImageRunningAverage)
-                        {
-                            if(movingAverageData == null)
-                            {
-                                movingAverageData = new SimpleMovingAverage[ImageWidth* ImageHeight];
-                                for(int i = 0; i < movingAverageData.Length; i++)
-                                {
-                                    movingAverageData[i] = new SimpleMovingAverage(ImageRunningAverageCount);
-                                }
-                            }
-                            ushort[] sdata = new ushort[(int)Math.Ceiling((double)buffer.Length / 2)];
-                            Buffer.BlockCopy(buffer, 0, sdata, 0, buffer.Length);
-                            for (int i = 0; i < movingAverageData.Length; i++)
-                            {
-                                movingAverageData[i].Update(sdata[i]);
-                            }
-                            imageAveragingCount++;
-                            if (imageAveragingCount == ImageRunningAverageCount)
-                            {
-                                imageAveragingCount = 0;
-                                ImageRunningAverage = false;
-
-                                // Trigger the RunningFrameAverageCompleteEvent.
-                                RaiseEventRunningFrameAverageComplete(EventArgs.Empty);
-                            }
-                        }
-
                         // Trigger the FrameCapturedEvent.
                         RaiseEventFrameCaptured(EventArgs.Empty);
                     }
@@ -580,16 +600,6 @@ namespace PylonCameraApp
                 handler.Invoke(this, e);
             }
         }
-        // A displayable frame is ready.
-        protected virtual void RaiseEventRunningFrameAverageComplete(EventArgs e)
-        {
-            EventHandler handler = GuiCameraRunningFrameAverageForDisplay;
-            if (handler != null)
-            {
-                handler.Invoke(this, e);
-            }
-        }
-
 
         // Methods for disposing the GUI Camera with its dependencies.
         protected virtual void Dispose(bool disposing)
