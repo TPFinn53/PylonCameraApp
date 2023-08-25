@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Collections;
 using System.Windows.Forms;
 using System.Drawing;
@@ -9,9 +9,8 @@ using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using OxyPlot.Annotations;
-
 using Basler.Pylon;
-using System.Linq;
+using PylonCameraSharedLibrary;
 
 namespace PylonCameraApp
 {
@@ -61,20 +60,20 @@ namespace PylonCameraApp
             // Initialise the delegate
             this.updateStatusDelegate = new UpdateStatusDelegate(this.UpdateStatus);
         }
-        private void RestoreCalibration(CalibrationData data)
+        private void RestoreCalibration(PylonCalibrationData data)
         {
             imageHeight = data.Rows;
             imageWidth = data.Columns;
             latestAveragedFrameBuffer = data.Raster;
             deadPixelMask = data.Mask;
             imagePixelType = data.PixelType;
-            SelectionAnnotation rect = data.Selection;
+
             rectAnno = new RectangleAnnotation
             {
-                MinimumX = rect.MinimumX,
-                MaximumX = rect.MaximumX,
-                MinimumY = rect.MinimumY,
-                MaximumY = rect.MaximumY,
+                MinimumX = data.Selection.Left,
+                MaximumX = data.Selection.Right,
+                MinimumY = data.Selection.Top,
+                MaximumY = data.Selection.Bottom,
                 TextRotation = 0,
                 Text = "Valid Pixels",
                 Fill = OxyColor.FromAColor(99, 
@@ -111,7 +110,7 @@ namespace PylonCameraApp
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                CalibrationData data = ReadFromBinaryFile<CalibrationData>(openFileDialog1.FileName);
+                PylonCalibrationData data = ReadFromBinaryFile<PylonCalibrationData>(openFileDialog1.FileName);
                 RestoreCalibration(data);
                 FileName = openFileDialog1.FileName;
                 return true;
@@ -133,7 +132,7 @@ namespace PylonCameraApp
             // If the file name is not an empty string open it for saving.
             if (saveFileDialog1.FileName != "")
             {
-                CalibrationData data = new CalibrationData();
+                PylonCalibrationData data = new PylonCalibrationData();
                 data.Rows = imageHeight;
                 data.Columns = imageWidth;
                 data.Raster = latestAveragedFrameBuffer;
@@ -141,11 +140,7 @@ namespace PylonCameraApp
                 data.Bins = arrLineHistogram.Length;
                 data.PixelType = imagePixelType;
 
-                SelectionAnnotation sel = new SelectionAnnotation();
-                sel.MaximumX = rectAnno.MaximumX;
-                sel.MaximumY = rectAnno.MaximumY;
-                sel.MinimumX = rectAnno.MinimumX;
-                sel.MinimumY = rectAnno.MinimumY;
+                Rectangle sel = new Rectangle((int)rectAnno.MinimumX, (int)rectAnno.MinimumY, (int)(rectAnno.MaximumX- rectAnno.MinimumX), (int)(rectAnno.MaximumY - rectAnno.MinimumY));
                 data.Selection = sel;
 
                 WriteToBinaryFile(saveFileDialog1.FileName, data);

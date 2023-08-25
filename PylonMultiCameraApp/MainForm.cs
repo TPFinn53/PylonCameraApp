@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
+
 using Basler.Pylon;
 
 namespace PylonMultiCameraApp
@@ -332,6 +334,63 @@ namespace PylonMultiCameraApp
         private void SerialNumberTextBox1TextChanged(object sender, EventArgs e)
         {
             openBySerialNumberButton1.Enabled = serialNumberTextBox1.Text != "";
+        }
+
+        private void OnClickSelectMask1(object sender, EventArgs e)
+        {
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = "c:\\";
+                openFileDialog.Filter = "CAL files (*.cal)|*.cal";
+                openFileDialog.FilterIndex = 2;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    ////Get the path of specified file
+                    //filePath = openFileDialog.FileName;
+
+                    ////Read the contents of the file into a stream
+                    //var fileStream = openFileDialog.OpenFile();
+
+                    //using (StreamReader reader = new StreamReader(fileStream))
+                    //{
+                    //    fileContent = reader.ReadToEnd();
+                    //}
+                }
+            }
+        }
+
+        private void OnClickSelectMask2(object sender, EventArgs e)
+        {
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = "c:\\";
+                openFileDialog.Filter = "CAL files (*.cal)|*.cal";
+                openFileDialog.FilterIndex = 2;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    ////Get the path of specified file
+                    //filePath = openFileDialog.FileName;
+
+                    ////Read the contents of the file into a stream
+                    //var fileStream = openFileDialog.OpenFile();
+
+                    //using (StreamReader reader = new StreamReader(fileStream))
+                    //{
+                    //    fileContent = reader.ReadToEnd();
+                    //}
+                }
+            }
+
         }
     }
 }

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PylonCameraApp", "PylonCame
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PylonMultiCameraApp", "PylonMultiCameraApp\PylonMultiCameraApp.csproj", "{A964D9F6-63E5-4B46-82F3-50AB2380BCD7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PylonCameraSharedLibrary", "PylonCameraSharedLibrary\PylonCameraSharedLibrary.csproj", "{CCDCFE9B-E03A-4324-B92A-82DB01064AB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{A964D9F6-63E5-4B46-82F3-50AB2380BCD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A964D9F6-63E5-4B46-82F3-50AB2380BCD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A964D9F6-63E5-4B46-82F3-50AB2380BCD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCDCFE9B-E03A-4324-B92A-82DB01064AB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCDCFE9B-E03A-4324-B92A-82DB01064AB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCDCFE9B-E03A-4324-B92A-82DB01064AB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCDCFE9B-E03A-4324-B92A-82DB01064AB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

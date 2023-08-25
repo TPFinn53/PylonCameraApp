@@ -47,7 +47,6 @@
             this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.settingsPanel1 = new PylonCameraApp.SettingsPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.userIDTextBox1 = new System.Windows.Forms.TextBox();
             this.serialNumberTextBox1 = new System.Windows.Forms.TextBox();
@@ -58,8 +57,9 @@
             this.panelDeviceOpenCloseButtons = new System.Windows.Forms.Panel();
             this.cameraSelectionComboBox = new System.Windows.Forms.ComboBox();
             this.scanButton = new System.Windows.Forms.Button();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.CalibrationView = new PylonCameraApp.CalibrationUserControl();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.settingsPanel1 = new PylonCameraApp.SettingsPanel();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -227,17 +227,6 @@
             this.splitContainer1.SplitterDistance = 341;
             this.splitContainer1.TabIndex = 2;
             // 
-            // settingsPanel1
-            // 
-            this.settingsPanel1.AutoSize = true;
-            this.settingsPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.settingsPanel1.Location = new System.Drawing.Point(0, 85);
-            this.settingsPanel1.Margin = new System.Windows.Forms.Padding(2);
-            this.settingsPanel1.Name = "settingsPanel1";
-            this.settingsPanel1.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
-            this.settingsPanel1.Size = new System.Drawing.Size(337, 340);
-            this.settingsPanel1.TabIndex = 2;
-            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.userIDTextBox1);
@@ -338,14 +327,25 @@
             this.scanButton.UseVisualStyleBackColor = true;
             this.scanButton.Click += new System.EventHandler(this.ScanButtonClick);
             // 
-            // calibrationUserControl2
+            // CalibrationView
             // 
             this.CalibrationView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.CalibrationView.FileName = "";
             this.CalibrationView.Location = new System.Drawing.Point(0, 0);
-            this.CalibrationView.Name = "calibrationUserControl2";
+            this.CalibrationView.Name = "CalibrationView";
             this.CalibrationView.Size = new System.Drawing.Size(451, 425);
             this.CalibrationView.TabIndex = 0;
+            // 
+            // settingsPanel1
+            // 
+            this.settingsPanel1.AutoSize = true;
+            this.settingsPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.settingsPanel1.Location = new System.Drawing.Point(0, 85);
+            this.settingsPanel1.Margin = new System.Windows.Forms.Padding(2);
+            this.settingsPanel1.Name = "settingsPanel1";
+            this.settingsPanel1.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
+            this.settingsPanel1.Size = new System.Drawing.Size(337, 340);
+            this.settingsPanel1.TabIndex = 2;
             // 
             // MainForm
             // 
@@ -397,7 +397,6 @@
         private System.Windows.Forms.Button openByUserIDButton1;
         private System.Windows.Forms.Button openBySerialNumberButton1;
         private System.Windows.Forms.Button openSelectedButton1;
-        private SettingsPanel settingsPanel1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
@@ -411,6 +410,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private CalibrationUserControl CalibrationView;
+        private SettingsPanel settingsPanel1;
     }
 }
 

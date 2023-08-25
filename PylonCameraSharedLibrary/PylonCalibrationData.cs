@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Drawing;
-using System.Collections.Generic;
 using Basler.Pylon;
-using OxyPlot.Annotations;
 
-namespace PylonCameraApp
+namespace PylonCameraSharedLibrary
 {
     [Serializable]
-    public class CalibrationData
+    public class PylonCalibrationData
     {
         public int Bins { set; get; }
         public int Columns { set; get; }
@@ -15,6 +13,6 @@ namespace PylonCameraApp
         public ushort[] Raster { set; get; }
         public bool[] Mask { set; get; }
         public PixelType PixelType { set; get; }
-        public SelectionAnnotation Selection { set; get; }
+        public Rectangle Selection { set; get; }
     }
 }

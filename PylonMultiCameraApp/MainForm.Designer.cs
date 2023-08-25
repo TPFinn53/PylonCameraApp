@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.cameraSelectionComboBox = new System.Windows.Forms.ComboBox();
             this.scanButton = new System.Windows.Forms.Button();
             this.openSelectedButton1 = new System.Windows.Forms.Button();
@@ -45,10 +44,14 @@
             this.serialNumberTextBox1 = new System.Windows.Forms.TextBox();
             this.panelDeviceOpenCloseButtons = new System.Windows.Forms.Panel();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.settingsPanel1 = new SettingsPanel();
+            this.settingsPanel1 = new PylonMultiCameraApp.SettingsPanel();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.settingsPanel2 = new SettingsPanel();
+            this.SelectMask1 = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.settingsPanel2 = new PylonMultiCameraApp.SettingsPanel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.SelectMask2 = new System.Windows.Forms.Button();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.panelDeviceOpenCloseButtons.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
@@ -60,7 +63,7 @@
             // 
             // cameraSelectionComboBox
             // 
-            this.cameraSelectionComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.cameraSelectionComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cameraSelectionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cameraSelectionComboBox.DropDownWidth = 556;
@@ -241,14 +244,16 @@
             // 
             this.settingsPanel1.AutoSize = true;
             this.settingsPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.settingsPanel1.Location = new System.Drawing.Point(0, 55);
+            this.settingsPanel1.Location = new System.Drawing.Point(0, 85);
             this.settingsPanel1.Margin = new System.Windows.Forms.Padding(2);
             this.settingsPanel1.Name = "settingsPanel1";
-            this.settingsPanel1.Size = new System.Drawing.Size(340, 627);
+            this.settingsPanel1.Size = new System.Drawing.Size(340, 597);
             this.settingsPanel1.TabIndex = 1;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.SelectMask1);
+            this.panel1.Controls.Add(this.comboBox1);
             this.panel1.Controls.Add(this.openBySerialNumberButton1);
             this.panel1.Controls.Add(this.serialNumberTextBox1);
             this.panel1.Controls.Add(this.closeButton1);
@@ -258,21 +263,42 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(340, 55);
+            this.panel1.Size = new System.Drawing.Size(340, 85);
             this.panel1.TabIndex = 0;
+            // 
+            // SelectMask1
+            // 
+            this.SelectMask1.Location = new System.Drawing.Point(3, 56);
+            this.SelectMask1.Margin = new System.Windows.Forms.Padding(2);
+            this.SelectMask1.Name = "SelectMask1";
+            this.SelectMask1.Size = new System.Drawing.Size(109, 22);
+            this.SelectMask1.TabIndex = 10;
+            this.SelectMask1.Text = "Select Mask";
+            this.SelectMask1.UseVisualStyleBackColor = true;
+            this.SelectMask1.Click += new System.EventHandler(this.OnClickSelectMask1);
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(116, 56);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(219, 21);
+            this.comboBox1.TabIndex = 9;
             // 
             // settingsPanel2
             // 
             this.settingsPanel2.AutoSize = true;
             this.settingsPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.settingsPanel2.Location = new System.Drawing.Point(0, 55);
+            this.settingsPanel2.Location = new System.Drawing.Point(0, 85);
             this.settingsPanel2.Margin = new System.Windows.Forms.Padding(2);
             this.settingsPanel2.Name = "settingsPanel2";
-            this.settingsPanel2.Size = new System.Drawing.Size(340, 627);
+            this.settingsPanel2.Size = new System.Drawing.Size(340, 597);
             this.settingsPanel2.TabIndex = 1;
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.SelectMask2);
+            this.panel2.Controls.Add(this.comboBox2);
             this.panel2.Controls.Add(this.openBySerialNumberButton2);
             this.panel2.Controls.Add(this.openSelectedButton2);
             this.panel2.Controls.Add(this.userIDTextBox2);
@@ -282,8 +308,27 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(340, 55);
+            this.panel2.Size = new System.Drawing.Size(340, 85);
             this.panel2.TabIndex = 0;
+            // 
+            // SelectMask2
+            // 
+            this.SelectMask2.Location = new System.Drawing.Point(3, 56);
+            this.SelectMask2.Margin = new System.Windows.Forms.Padding(2);
+            this.SelectMask2.Name = "SelectMask2";
+            this.SelectMask2.Size = new System.Drawing.Size(109, 22);
+            this.SelectMask2.TabIndex = 17;
+            this.SelectMask2.Text = "Select Mask";
+            this.SelectMask2.UseVisualStyleBackColor = true;
+            this.SelectMask2.Click += new System.EventHandler(this.OnClickSelectMask2);
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(116, 56);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(219, 21);
+            this.comboBox2.TabIndex = 16;
             // 
             // MainForm
             // 
@@ -292,12 +337,11 @@
             this.ClientSize = new System.Drawing.Size(684, 711);
             this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.panelDeviceOpenCloseButtons);
-            //this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(700, 450);
             this.Name = "MainForm";
-            this.Text = "Pylon Multiple Camera Application";
+            this.Text = "Multiple Camera Pylon Application";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainFormFormClosing);
             this.panelDeviceOpenCloseButtons.ResumeLayout(false);
             this.splitContainer.Panel1.ResumeLayout(false);
@@ -335,6 +379,10 @@
         private System.Windows.Forms.Panel panel1;
         private SettingsPanel settingsPanel2;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button SelectMask1;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Button SelectMask2;
+        private System.Windows.Forms.ComboBox comboBox2;
     }
 }
 
